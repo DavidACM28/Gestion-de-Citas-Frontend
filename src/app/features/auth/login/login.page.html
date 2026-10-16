@@ -1,0 +1,89 @@
+<main class="login-container">
+  <mat-card class="login-card">
+    <mat-card-header>
+      <div class="login-card__logo">
+        <span class="login-card__icon-wrapper" aria-hidden="true">
+          <mat-icon class="login-card__icon">medical_services</mat-icon>
+        </span>
+        <div>
+          <h1 class="login-card__title">Gestión de Citas</h1>
+          <p class="login-card__eyebrow">Centro médico</p>
+        </div>
+      </div>
+      <mat-card-subtitle>Ingresa tus credenciales para continuar</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      @if (sessionExpiredMessage) {
+        <div class="alert alert--warning" role="alert" aria-live="polite">
+          <mat-icon>schedule</mat-icon>
+          <span>Tu sesión expiró. Por favor, vuelve a iniciar sesión.</span>
+        </div>
+      }
+
+      <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Usuario</mat-label>
+          <mat-icon matPrefix>person</mat-icon>
+          <input
+            matInput
+            formControlName="userName"
+            autocomplete="username"
+            aria-label="Nombre de usuario"
+            placeholder="Ej. admin"
+          />
+          @if (form.controls.userName.hasError('required') && form.controls.userName.touched) {
+            <mat-error>El usuario es obligatorio</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Contraseña</mat-label>
+          <mat-icon matPrefix>lock</mat-icon>
+          <input
+            matInput
+            [type]="hidePassword ? 'password' : 'text'"
+            formControlName="password"
+            autocomplete="current-password"
+            aria-label="Contraseña"
+          />
+          <button
+            mat-icon-button
+            matSuffix
+            type="button"
+            (click)="hidePassword = !hidePassword"
+            [attr.aria-label]="hidePassword ? 'Mostrar contraseña' : 'Ocultar contraseña'"
+          >
+            <mat-icon>{{ hidePassword ? 'visibility' : 'visibility_off' }}</mat-icon>
+          </button>
+          @if (form.controls.password.hasError('required') && form.controls.password.touched) {
+            <mat-error>La contraseña es obligatoria</mat-error>
+          } @else if (
+            form.controls.password.hasError('minlength') && form.controls.password.touched
+          ) {
+            <mat-error>Debe contener al menos 4 caracteres</mat-error>
+          }
+        </mat-form-field>
+
+        <button
+          mat-flat-button
+          type="submit"
+          class="full-width login-button"
+          [disabled]="form.invalid || loading"
+        >
+          @if (loading) {
+            <mat-spinner class="spinner-on-primary" diameter="20" />
+            <span>Ingresando...</span>
+          } @else {
+            <span>Iniciar sesión</span>
+          }
+        </button>
+      </form>
+    </mat-card-content>
+
+    <mat-card-footer>
+      <mat-icon aria-hidden="true">health_and_safety</mat-icon>
+      <span>Acceso seguro para personal y pacientes</span>
+    </mat-card-footer>
+  </mat-card>
+</main>

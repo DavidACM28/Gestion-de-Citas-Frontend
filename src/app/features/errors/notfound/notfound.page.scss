@@ -1,0 +1,47 @@
+.error-page {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: var(--space-6);
+}
+
+.error-card {
+  width: min(100%, 480px);
+  align-items: center;
+  padding: var(--space-8);
+  text-align: center;
+}
+
+.error-card__icon {
+  width: 72px;
+  height: 72px;
+  display: grid;
+  place-items: center;
+  margin-bottom: var(--space-4);
+  color: var(--color-primary);
+  background: var(--color-primary-soft);
+  border-radius: 50%;
+}
+
+.error-card__icon mat-icon {
+  width: 36px;
+  height: 36px;
+  font-size: 36px;
+}
+
+.error-card__code {
+  margin: 0 0 var(--space-2);
+  color: var(--color-primary);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.error-card h1 {
+  margin-bottom: var(--space-2);
+}
+
+.error-card > p:not(.error-card__code) {
+  max-width: 360px;
+  margin: 0 0 var(--space-6);
+}

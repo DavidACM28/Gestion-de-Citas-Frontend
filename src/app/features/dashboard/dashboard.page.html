@@ -1,0 +1,15 @@
+<main class="dashboard-placeholder">
+  <mat-card>
+    <mat-icon class="dashboard-placeholder__icon" aria-hidden="true">medical_services</mat-icon>
+    <p class="dashboard-placeholder__eyebrow">Sesión iniciada</p>
+    <h1>Bienvenido, {{ currentUser()?.userName }}</h1>
+    <p>
+      Tu rol es <strong>{{ currentUser()?.role }}</strong>. El panel de navegación se incorporará
+      en la siguiente fase.
+    </p>
+    <button mat-stroked-button type="button" (click)="logout()">
+      <mat-icon>logout</mat-icon>
+      Cerrar sesión
+    </button>
+  </mat-card>
+</main>
