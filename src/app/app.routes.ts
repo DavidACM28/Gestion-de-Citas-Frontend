@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
+import { ShellComponent } from './layout/shell/shell.component';
 
 export const routes: Routes = [
   // Rutas públicas (sin autenticación)
@@ -22,6 +23,7 @@ export const routes: Routes = [
   // Rutas protegidas (con autenticación)
   {
     path: '',
+    component: ShellComponent,
     canActivate: [authGuard],
     children: [
       {

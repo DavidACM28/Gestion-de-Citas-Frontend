@@ -1,0 +1,23 @@
+<div class="shell">
+  <app-toolbar
+    class="shell-toolbar"
+    (menuToggle)="toggleSidenav()"
+  ></app-toolbar>
+
+  <mat-sidenav-container class="shell-container">
+    <mat-sidenav
+      class="shell-sidenav"
+      #sidenav
+      [mode]="isHandset ? 'over' : 'side'"
+      [opened]="!isHandset"
+    >
+      <app-sidenav></app-sidenav>
+    </mat-sidenav>
+
+    <mat-sidenav-content class="shell-content">
+      <main class="shell-main">
+        <router-outlet></router-outlet>
+      </main>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+</div>

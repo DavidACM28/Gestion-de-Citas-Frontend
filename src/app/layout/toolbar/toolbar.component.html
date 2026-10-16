@@ -1,0 +1,44 @@
+<mat-toolbar class="toolbar">
+  <button
+    mat-icon-button
+    class="toolbar__menu-btn"
+    type="button"
+    aria-label="Abrir o cerrar menú de navegación"
+    (click)="toggleMenu()"
+  >
+    <mat-icon>menu</mat-icon>
+  </button>
+
+  <div class="toolbar__brand">
+    <mat-icon class="toolbar__brand-icon">medical_services</mat-icon>
+    <span class="toolbar__brand-text">Gestión de Citas</span>
+  </div>
+
+  <span class="toolbar__spacer"></span>
+
+  <button
+    mat-button
+    class="toolbar__user-btn"
+    type="button"
+    [matMenuTriggerFor]="userMenu"
+    aria-label="Abrir menú del usuario"
+  >
+    <mat-icon>account_circle</mat-icon>
+    <span class="toolbar__username">{{ auth.currentUser()?.userName }}</span>
+    <mat-icon>arrow_drop_down</mat-icon>
+  </button>
+
+  <mat-menu #userMenu="matMenu" xPosition="before">
+    <div class="toolbar__user-info" (click)="$event.stopPropagation()">
+      <strong>{{ auth.currentUser()?.userName }}</strong>
+      <span>{{ auth.currentUser()?.role }}</span>
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <button mat-menu-item type="button" (click)="logout()">
+      <mat-icon>logout</mat-icon>
+      <span>Cerrar sesión</span>
+    </button>
+  </mat-menu>
+</mat-toolbar>

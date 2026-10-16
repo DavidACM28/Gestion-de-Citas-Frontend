@@ -1,5 +1,4 @@
 import { Component, inject } from '@angular/core';
-import { Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { SharedMaterialModule } from '../../shared/shared-material.module';
 
@@ -12,12 +11,6 @@ import { SharedMaterialModule } from '../../shared/shared-material.module';
 })
 export class DashboardPage {
   private readonly authService = inject(AuthService);
-  private readonly router = inject(Router);
 
-  readonly currentUser = this.authService.currentUser;
-
-  logout(): void {
-    this.authService.logout();
-    void this.router.navigate(['/login']);
-  }
+  protected readonly currentUser = this.authService.currentUser;
 }

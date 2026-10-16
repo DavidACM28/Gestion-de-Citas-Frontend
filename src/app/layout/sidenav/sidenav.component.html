@@ -1,0 +1,37 @@
+<nav class="sidenav" aria-label="Navegación principal">
+  <mat-nav-list>
+    @for (item of navItems; track item.route) {
+      @if (!item.roles) {
+        <a
+          mat-list-item
+          [routerLink]="item.route"
+          routerLinkActive="active-link"
+          [routerLinkActiveOptions]="{ exact: item.route === '/dashboard' }"
+        >
+          <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
+          <span matListItemTitle>{{ item.label }}</span>
+        </a>
+      } @else {
+        <a
+          *appHasRole="item.roles"
+          mat-list-item
+          [routerLink]="item.route"
+          routerLinkActive="active-link"
+        >
+          <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
+          <span matListItemTitle>{{ item.label }}</span>
+        </a>
+      }
+    }
+  </mat-nav-list>
+
+  <mat-divider></mat-divider>
+
+  <div class="sidenav__session">
+    <mat-icon>verified_user</mat-icon>
+    <div>
+      <span>Sesión activa</span>
+      <strong>{{ auth.currentUser()?.role }}</strong>
+    </div>
+  </div>
+</nav>
