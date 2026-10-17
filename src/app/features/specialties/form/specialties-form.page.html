@@ -1,0 +1,65 @@
+<app-page-header
+  title="Nueva especialidad"
+  description="Completa los datos de la especialidad médica"
+>
+  <a mat-button routerLink="/specialties">
+    <mat-icon>arrow_back</mat-icon>
+    Cancelar
+  </a>
+</app-page-header>
+
+<mat-card>
+  <mat-card-content>
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate class="specialty-form">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Nombre de la especialidad</mat-label>
+        <input matInput formControlName="name" aria-label="Nombre de la especialidad" />
+
+        @if (form.controls.name.hasError('required') && form.controls.name.touched) {
+          <mat-error>El nombre es requerido</mat-error>
+        }
+        @if (form.controls.name.hasError('pattern') && form.controls.name.touched) {
+          <mat-error>El nombre no puede contener solo espacios</mat-error>
+        }
+        @if (form.controls.name.hasError('maxlength') && form.controls.name.touched) {
+          <mat-error>Máximo 100 caracteres</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Descripción</mat-label>
+        <textarea
+          matInput
+          formControlName="description"
+          rows="4"
+          aria-label="Descripción de la especialidad"
+        ></textarea>
+
+        @if (form.controls.description.hasError('required') && form.controls.description.touched) {
+          <mat-error>La descripción es requerida</mat-error>
+        }
+        @if (form.controls.description.hasError('pattern') && form.controls.description.touched) {
+          <mat-error>La descripción no puede contener solo espacios</mat-error>
+        }
+        @if (form.controls.description.hasError('maxlength') && form.controls.description.touched) {
+          <mat-error>Máximo 100 caracteres</mat-error>
+        }
+      </mat-form-field>
+
+      <div class="form-actions">
+        <button
+          mat-raised-button
+          color="primary"
+          type="submit"
+          [disabled]="form.invalid || loading()"
+        >
+          @if (loading()) {
+            <mat-spinner diameter="18" />
+          } @else {
+            Crear especialidad
+          }
+        </button>
+      </div>
+    </form>
+  </mat-card-content>
+</mat-card>

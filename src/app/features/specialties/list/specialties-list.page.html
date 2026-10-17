@@ -1,0 +1,69 @@
+<app-page-header
+  title="Especialidades"
+  description="Catálogo de especialidades médicas disponibles"
+>
+  <button *appHasRole="'Admin'" mat-raised-button color="primary" routerLink="/specialties/new">
+    <mat-icon>add</mat-icon>
+    Nueva especialidad
+  </button>
+</app-page-header>
+
+<mat-card>
+  <mat-card-content>
+    @if (loading()) {
+      <div class="table-skeleton" aria-label="Cargando especialidades">
+        @for (item of [1, 2, 3, 4, 5]; track item) {
+          <div class="skeleton-row"></div>
+        }
+      </div>
+    } @else if (dataSource.data.length === 0) {
+      <app-empty-state
+        icon="medical_information"
+        title="No se encontraron especialidades"
+        message="No hay especialidades médicas disponibles en este momento."
+      ></app-empty-state>
+    } @else {
+      <div class="table-container">
+        <table mat-table [dataSource]="dataSource" aria-label="Listado de especialidades">
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>Nombre</th>
+            <td mat-cell *matCellDef="let specialty">{{ specialty.name }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="description">
+            <th mat-header-cell *matHeaderCellDef>Descripción</th>
+            <td mat-cell *matCellDef="let specialty" class="description-cell">
+              {{ specialty.description }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Acciones</th>
+            <td mat-cell *matCellDef="let specialty">
+              <button
+                mat-icon-button
+                matTooltip="Ver detalle"
+                [routerLink]="['/specialties', specialty.id]"
+                [attr.aria-label]="'Ver detalle de ' + specialty.name"
+              >
+                <mat-icon>visibility</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        </table>
+      </div>
+
+      <mat-paginator
+        [length]="totalItems"
+        [pageSize]="pageSize"
+        [pageIndex]="pageIndex"
+        [pageSizeOptions]="[5, 10, 25]"
+        (page)="onPageChange($event)"
+        aria-label="Paginación de especialidades"
+      />
+    }
+  </mat-card-content>
+</mat-card>

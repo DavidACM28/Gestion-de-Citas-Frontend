@@ -1,0 +1,29 @@
+<app-page-header
+  [title]="specialty()?.name ?? 'Detalle de especialidad'"
+  description="Información completa de la especialidad médica"
+>
+  <a mat-button routerLink="/specialties">
+    <mat-icon>arrow_back</mat-icon>
+    Volver
+  </a>
+</app-page-header>
+
+@if (loading()) {
+  <mat-progress-bar mode="indeterminate" />
+} @else if (specialty()) {
+  <mat-card>
+    <mat-card-content>
+      <div class="detail-grid">
+        <div class="detail-field">
+          <span class="detail-field__label">Nombre</span>
+          <span class="detail-field__value">{{ specialty()!.name }}</span>
+        </div>
+
+        <div class="detail-field full-width">
+          <span class="detail-field__label">Descripción</span>
+          <span class="detail-field__value">{{ specialty()!.description }}</span>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+}
