@@ -16,3 +16,13 @@ export interface DoctorListRequest {
   pageNumber: number;
   pageSize: number;
 }
+
+export interface CreateDoctorRequest {
+  username: string;
+  email: string;
+  password: string;
+  specialtyId: number;
+  firstName: string;
+  lastName: string;
+  phoneNumber: string;
+}

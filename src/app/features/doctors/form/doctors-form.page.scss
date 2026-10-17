@@ -1,0 +1,40 @@
+.doctor-form {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.doctor-form h2 {
+  margin: var(--space-2) 0 var(--space-3);
+  color: var(--color-text-primary);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.doctor-form mat-divider {
+  margin: var(--space-3) 0;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.form-row mat-form-field,
+.full-width {
+  width: 100%;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: var(--space-3);
+}
+
+@media (max-width: 599px) {
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+}

@@ -3,7 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { API_ROUTES } from '../constants/api-routes.constants';
 import { ApiResult } from '../models/auth.model';
-import { Doctor, DoctorListRequest } from '../models/doctor.model';
+import { CreateDoctorRequest, Doctor, DoctorListRequest } from '../models/doctor.model';
 import { ApiServiceFactory } from './api-service-factory';
 
 @Injectable({
@@ -32,5 +32,14 @@ export class DoctorService {
   getMe(): Observable<Doctor> {
     const url = this.factory.create(API_ROUTES.DOCTORS.ME).url;
     return this.http.get<ApiResult<Doctor>>(url).pipe(map((result) => result.value!));
+  }
+
+  getById(id: number): Observable<Doctor> {
+    const url = this.factory.create(API_ROUTES.DOCTORS.BY_ID(id)).url;
+    return this.http.get<ApiResult<Doctor>>(url).pipe(map((result) => result.value!));
+  }
+
+  create(request: CreateDoctorRequest): Observable<ApiResult<Doctor>> {
+    return this.http.post<ApiResult<Doctor>>(this.baseUrl, request);
   }
 }

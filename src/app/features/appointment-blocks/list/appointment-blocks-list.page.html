@@ -1,0 +1,143 @@
+<app-page-header
+  title="Bloqueos de agenda"
+  description="Consulta y administra los periodos sin atención médica"
+>
+  @if (canCreate) {
+    <a
+      mat-raised-button
+      color="primary"
+      routerLink="/appointment-blocks/new"
+      [queryParams]="filters.controls.doctorId.value ? { doctorId: filters.controls.doctorId.value } : null"
+    >
+      <mat-icon>add</mat-icon>
+      Nuevo bloqueo
+    </a>
+  }
+</app-page-header>
+
+<mat-card class="filters-card">
+  <mat-card-content>
+    @if (isDoctor && currentDoctor()) {
+      <div class="doctor-summary">
+        <mat-icon>medical_services</mat-icon>
+        <div>
+          <strong>{{ currentDoctor()!.firstName }} {{ currentDoctor()!.lastName }}</strong>
+          <span>{{ currentDoctor()!.specialty.name }}</span>
+        </div>
+      </div>
+    }
+
+    <form [formGroup]="filters" (ngSubmit)="applyFilters()" class="filters-form">
+      @if (!isDoctor) {
+        <mat-form-field appearance="outline">
+          <mat-label>Médico</mat-label>
+          <mat-select
+            formControlName="doctorId"
+            [disabled]="loadingDoctors()"
+            aria-label="Filtrar por médico"
+          >
+            <mat-option [value]="null">Todos</mat-option>
+            @for (doctor of doctors(); track doctor.id) {
+              <mat-option [value]="doctor.id">
+                {{ doctor.firstName }} {{ doctor.lastName }} — {{ doctor.specialty.name }}
+              </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      }
+
+      <mat-form-field appearance="outline">
+        <mat-label>Desde</mat-label>
+        <input matInput [matDatepicker]="startPicker" formControlName="startDate" />
+        <mat-datepicker-toggle matIconSuffix [for]="startPicker" />
+        <mat-datepicker #startPicker />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Hasta</mat-label>
+        <input matInput [matDatepicker]="endPicker" formControlName="endDate" />
+        <mat-datepicker-toggle matIconSuffix [for]="endPicker" />
+        <mat-datepicker #endPicker />
+      </mat-form-field>
+
+      <div class="filter-actions">
+        <button mat-raised-button color="primary" type="submit">
+          <mat-icon>search</mat-icon>
+          Filtrar
+        </button>
+        <button mat-button type="button" (click)="clearFilters()">Limpiar</button>
+      </div>
+    </form>
+  </mat-card-content>
+</mat-card>
+
+<mat-card>
+  <mat-card-content>
+    @if (loading() || loadingDoctors()) {
+      <div class="table-skeleton" aria-label="Cargando bloqueos">
+        @for (item of [1, 2, 3, 4, 5]; track item) {
+          <div class="skeleton-row"></div>
+        }
+      </div>
+    } @else if (dataSource.data.length === 0) {
+      <app-empty-state
+        icon="event_available"
+        title="No se encontraron bloqueos"
+        message="No hay bloqueos activos que coincidan con los filtros seleccionados."
+      ></app-empty-state>
+    } @else {
+      <div class="table-container">
+        <table mat-table [dataSource]="dataSource" aria-label="Listado de bloqueos de agenda">
+          <ng-container matColumnDef="date">
+            <th mat-header-cell *matHeaderCellDef>Fecha</th>
+            <td mat-cell *matCellDef="let block">
+              <strong>{{ block.date | date: 'dd/MM/yyyy' : 'UTC' }}</strong>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="timeRange">
+            <th mat-header-cell *matHeaderCellDef>Horario bloqueado</th>
+            <td mat-cell *matCellDef="let block">
+              {{ formatTime(block.startTime) }} – {{ formatTime(block.endTime) }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="doctor">
+            <th mat-header-cell *matHeaderCellDef>Médico</th>
+            <td mat-cell *matCellDef="let block">
+              {{ doctorName(block.doctorId) }}
+              <span class="cell-secondary">{{ doctorSpecialty(block.doctorId) }}</span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="reason">
+            <th mat-header-cell *matHeaderCellDef>Motivo</th>
+            <td mat-cell *matCellDef="let block" class="reason-cell">{{ block.reason }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Acciones</th>
+            <td mat-cell *matCellDef="let block">
+              @if (canDeactivate) {
+                <button
+                  mat-icon-button
+                  color="warn"
+                  matTooltip="Desactivar bloqueo"
+                  aria-label="Desactivar bloqueo"
+                  (click)="confirmDeactivate(block)"
+                >
+                  <mat-icon>event_available</mat-icon>
+                </button>
+              } @else {
+                <span class="no-actions">—</span>
+              }
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        </table>
+      </div>
+    }
+  </mat-card-content>
+</mat-card>

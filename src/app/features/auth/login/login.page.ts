@@ -10,7 +10,7 @@ import { SharedMaterialModule } from '../../../shared/shared-material.module';
 @Component({
   selector: 'app-login-page',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, SharedMaterialModule],
+  imports: [CommonModule, ReactiveFormsModule, SharedMaterialModule],
   templateUrl: './login.page.html',
   styleUrl: './login.page.scss',
 })

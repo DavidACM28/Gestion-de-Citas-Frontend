@@ -38,6 +38,11 @@ export class ToolbarComponent {
       return;
     }
 
+    if (role === 'Doctor') {
+      this.router.navigate(['/doctors/me']);
+      return;
+    }
+
     if (role === 'Admin' || role === 'Receptionist') {
       this.router.navigate(['/users/me']);
     }

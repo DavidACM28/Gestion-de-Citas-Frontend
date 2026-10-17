@@ -51,6 +51,11 @@ export const routes: Routes = [
           import('./features/patients/patients.routes').then((m) => m.PATIENTS_ROUTES)
       },
       {
+        path: 'doctors',
+        loadChildren: () =>
+          import('./features/doctors/doctors.routes').then((m) => m.DOCTORS_ROUTES)
+      },
+      {
         path: 'users',
         loadChildren: () =>
           import('./features/users/users.routes').then((m) => m.USERS_ROUTES)
@@ -67,6 +72,13 @@ export const routes: Routes = [
         loadChildren: () =>
           import('./features/appointments/appointments.routes').then(
             (m) => m.APPOINTMENTS_ROUTES
+          )
+      },
+      {
+        path: 'appointment-blocks',
+        loadChildren: () =>
+          import('./features/appointment-blocks/appointment-blocks.routes').then(
+            (m) => m.APPOINTMENT_BLOCKS_ROUTES
           )
       },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' }

@@ -1,0 +1,92 @@
+<app-page-header
+  [title]="isOwnProfile ? 'Mi perfil médico' : doctor() ? doctor()!.firstName + ' ' + doctor()!.lastName : 'Detalle del médico'"
+  [description]="isOwnProfile ? 'Información de tu perfil profesional' : 'Información profesional y cuenta de acceso'"
+>
+  @if (!isOwnProfile) {
+    <a mat-button routerLink="/doctors">
+      <mat-icon>arrow_back</mat-icon>
+      Volver
+    </a>
+  }
+</app-page-header>
+
+@if (loading()) {
+  <mat-progress-bar mode="indeterminate" />
+} @else if (doctor()) {
+  <mat-card>
+    <mat-card-content>
+      <div class="profile-heading">
+        <div class="profile-icon" aria-hidden="true">
+          <mat-icon>medical_services</mat-icon>
+        </div>
+        <div>
+          <h2>{{ doctor()!.firstName }} {{ doctor()!.lastName }}</h2>
+          <span>{{ doctor()!.specialty.name }}</span>
+        </div>
+      </div>
+
+      <mat-divider />
+
+      <div class="detail-grid">
+        <div class="detail-field">
+          <span class="detail-field__label">Nombres</span>
+          <span class="detail-field__value">{{ doctor()!.firstName }}</span>
+        </div>
+
+        <div class="detail-field">
+          <span class="detail-field__label">Apellidos</span>
+          <span class="detail-field__value">{{ doctor()!.lastName }}</span>
+        </div>
+
+        <div class="detail-field">
+          <span class="detail-field__label">Especialidad</span>
+          <span class="detail-field__value">
+            <mat-chip>{{ doctor()!.specialty.name }}</mat-chip>
+          </span>
+        </div>
+
+        <div class="detail-field">
+          <span class="detail-field__label">Teléfono</span>
+          <span class="detail-field__value">{{ doctor()!.phoneNumber }}</span>
+        </div>
+
+        <div class="detail-field">
+          <span class="detail-field__label">Nombre de usuario</span>
+          <span class="detail-field__value">{{ doctor()!.user.username }}</span>
+        </div>
+
+        <div class="detail-field">
+          <span class="detail-field__label">Correo electrónico</span>
+          <span class="detail-field__value">{{ doctor()!.user.email }}</span>
+        </div>
+
+        <div class="detail-field full-width">
+          <span class="detail-field__label">Descripción de la especialidad</span>
+          <span class="detail-field__value">{{ doctor()!.specialty.description }}</span>
+        </div>
+      </div>
+
+      <div class="related-actions">
+        @if (canManageHours) {
+          <a
+            mat-stroked-button
+            routerLink="/business-hours"
+            [queryParams]="{ doctorId: doctor()!.id }"
+          >
+            <mat-icon>schedule</mat-icon>
+            Horarios de atención
+          </a>
+        }
+
+        <a
+          mat-stroked-button
+          routerLink="/appointment-blocks"
+          [queryParams]="{ doctorId: doctor()!.id }"
+        >
+          <mat-icon>event_busy</mat-icon>
+          Bloqueos de agenda
+        </a>
+      </div>
+    </mat-card-content>
+  </mat-card>
+}

@@ -1,0 +1,165 @@
+<app-page-header
+  title="Nuevo bloqueo"
+  description="Reserva un periodo en el que el médico no estará disponible"
+>
+  <a
+    mat-button
+    routerLink="/appointment-blocks"
+    [queryParams]="isAdmin && form.controls.doctorId.value ? { doctorId: form.controls.doctorId.value } : null"
+  >
+    <mat-icon>arrow_back</mat-icon>
+    Cancelar
+  </a>
+</app-page-header>
+
+@if (loadingData()) {
+  <mat-progress-bar mode="indeterminate" />
+} @else {
+  <mat-card>
+    <mat-card-content>
+      <form [formGroup]="form" (ngSubmit)="submit()" novalidate class="block-form">
+        @if (isAdmin) {
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Médico</mat-label>
+            <mat-select formControlName="doctorId" aria-label="Médico">
+              @for (doctor of doctors(); track doctor.id) {
+                <mat-option [value]="doctor.id">
+                  {{ doctor.firstName }} {{ doctor.lastName }} — {{ doctor.specialty.name }}
+                </mat-option>
+              }
+            </mat-select>
+            @if (form.controls.doctorId.hasError('required') && form.controls.doctorId.touched) {
+              <mat-error>Selecciona un médico</mat-error>
+            }
+          </mat-form-field>
+        } @else if (currentDoctor()) {
+          <div class="doctor-summary">
+            <mat-icon>medical_services</mat-icon>
+            <div>
+              <span>Médico</span>
+              <strong>{{ currentDoctor()!.firstName }} {{ currentDoctor()!.lastName }}</strong>
+              <small>{{ currentDoctor()!.specialty.name }}</small>
+            </div>
+          </div>
+        }
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Fecha</mat-label>
+          <input
+            matInput
+            [matDatepicker]="blockDatePicker"
+            [min]="minDate"
+            formControlName="date"
+            aria-label="Fecha del bloqueo"
+          />
+          <mat-datepicker-toggle matIconSuffix [for]="blockDatePicker" />
+          <mat-datepicker #blockDatePicker />
+          @if (form.controls.date.hasError('required') && form.controls.date.touched) {
+            <mat-error>La fecha es requerida</mat-error>
+          }
+          @if (form.controls.date.hasError('matDatepickerMin') && form.controls.date.touched) {
+            <mat-error>La fecha no puede estar en el pasado</mat-error>
+          }
+        </mat-form-field>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Hora de inicio</mat-label>
+            <input
+              matInput
+              type="time"
+              step="900"
+              formControlName="startTime"
+              aria-label="Hora de inicio"
+            />
+            @if (form.controls.startTime.hasError('required') && form.controls.startTime.touched) {
+              <mat-error>La hora de inicio es requerida</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Hora de fin</mat-label>
+            <input
+              matInput
+              type="time"
+              step="900"
+              formControlName="endTime"
+              aria-label="Hora de fin"
+            />
+            @if (form.controls.endTime.hasError('required') && form.controls.endTime.touched) {
+              <mat-error>La hora de fin es requerida</mat-error>
+            }
+          </mat-form-field>
+        </div>
+
+        @if (
+          form.hasError('timeRange') &&
+          (form.controls.startTime.touched || form.controls.endTime.touched)
+        ) {
+          <p class="form-error" role="alert">La hora de fin debe ser posterior a la hora de inicio.</p>
+        }
+
+        @if (
+          form.hasError('pastBlock') &&
+          (form.controls.date.touched || form.controls.startTime.touched)
+        ) {
+          <p class="form-error" role="alert">El bloqueo no puede comenzar en el pasado.</p>
+        }
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Motivo del bloqueo</mat-label>
+          <textarea
+            matInput
+            formControlName="reason"
+            rows="4"
+            aria-label="Motivo del bloqueo"
+          ></textarea>
+          <mat-hint align="end">{{ form.controls.reason.value?.length ?? 0 }}/250</mat-hint>
+          @if (form.controls.reason.hasError('required') && form.controls.reason.touched) {
+            <mat-error>El motivo es requerido</mat-error>
+          }
+          @if (form.controls.reason.hasError('pattern') && form.controls.reason.touched) {
+            <mat-error>Ingresa un motivo válido</mat-error>
+          }
+          @if (form.controls.reason.hasError('maxlength') && form.controls.reason.touched) {
+            <mat-error>Máximo 250 caracteres</mat-error>
+          }
+        </mat-form-field>
+
+        @if (isAdmin) {
+          <div class="force-option">
+            <mat-checkbox formControlName="force">Crear como bloqueo forzado</mat-checkbox>
+            <p>
+              Úsalo únicamente cuando sea necesario cancelar las citas que coincidan con este
+              periodo.
+            </p>
+          </div>
+
+          @if (form.controls.force.value) {
+            <div class="force-warning" role="alert">
+              <mat-icon>warning</mat-icon>
+              <span>
+                Las citas existentes dentro de este periodo serán canceladas automáticamente.
+              </span>
+            </div>
+          }
+        }
+
+        <div class="form-actions">
+          <button
+            mat-raised-button
+            color="primary"
+            type="submit"
+            [disabled]="form.invalid || loading()"
+          >
+            @if (loading()) {
+              <mat-spinner diameter="18" />
+            } @else {
+              {{ form.controls.force.value && isAdmin ? 'Crear bloqueo forzado' : 'Crear bloqueo' }}
+            }
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+}
