@@ -1,0 +1,235 @@
+<app-page-header title="Citas" description="Consulta y gestiona las citas médicas">
+  @if (canCreate) {
+    <a mat-raised-button color="primary" routerLink="/appointments/new">
+      <mat-icon>add</mat-icon>
+      Nueva cita
+    </a>
+  }
+</app-page-header>
+
+<mat-card class="filters-card">
+  <mat-card-content>
+    <form [formGroup]="filters" (ngSubmit)="applyFilters()" class="filters-form">
+      @if (!isDoctor) {
+        <mat-form-field appearance="outline">
+          <mat-label>Médico</mat-label>
+          <mat-select formControlName="doctorId">
+            <mat-option [value]="null">Todos</mat-option>
+            @for (doctor of doctors(); track doctor.id) {
+              <mat-option [value]="doctor.id">
+                {{ doctor.firstName }} {{ doctor.lastName }}
+              </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Especialidad</mat-label>
+          <mat-select formControlName="specialtyId">
+            <mat-option [value]="null">Todas</mat-option>
+            @for (specialty of specialties(); track specialty.id) {
+              <mat-option [value]="specialty.id">{{ specialty.name }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      }
+
+      @if (isManager) {
+        <mat-form-field appearance="outline">
+          <mat-label>Paciente</mat-label>
+          <mat-select formControlName="patientId">
+            <mat-option [value]="null">Todos</mat-option>
+            @for (patient of patients(); track patient.id) {
+              <mat-option [value]="patient.id">
+                {{ patient.firstName }} {{ patient.lastName }}
+              </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      }
+
+      <mat-form-field appearance="outline">
+        <mat-label>Estado</mat-label>
+        <mat-select formControlName="status">
+          <mat-option value="">Todos</mat-option>
+          @for (status of statuses; track status.value) {
+            <mat-option [value]="status.value">{{ status.label }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Desde</mat-label>
+        <input matInput [matDatepicker]="startPicker" formControlName="startDate" />
+        <mat-datepicker-toggle matIconSuffix [for]="startPicker" />
+        <mat-datepicker #startPicker />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Hasta</mat-label>
+        <input matInput [matDatepicker]="endPicker" formControlName="endDate" />
+        <mat-datepicker-toggle matIconSuffix [for]="endPicker" />
+        <mat-datepicker #endPicker />
+      </mat-form-field>
+
+      <div class="filter-actions">
+        <button mat-raised-button color="primary" type="submit">
+          <mat-icon>search</mat-icon>
+          Filtrar
+        </button>
+        <button mat-button type="button" (click)="clearFilters()">Limpiar</button>
+      </div>
+    </form>
+  </mat-card-content>
+</mat-card>
+
+<mat-card>
+  <mat-card-content>
+    @if (loading()) {
+      <div class="table-skeleton" aria-label="Cargando citas">
+        @for (item of [1, 2, 3, 4, 5]; track item) {
+          <div class="skeleton-row"></div>
+        }
+      </div>
+    } @else if (dataSource.data.length === 0) {
+      <app-empty-state
+        icon="event_busy"
+        title="No se encontraron citas"
+        message="No hay citas que coincidan con los filtros seleccionados."
+      ></app-empty-state>
+    } @else {
+      <div class="table-container">
+        <table mat-table [dataSource]="dataSource" aria-label="Listado de citas">
+          <ng-container matColumnDef="date">
+            <th mat-header-cell *matHeaderCellDef>Fecha y hora</th>
+            <td mat-cell *matCellDef="let appointment">
+              <strong>{{ appointment.date | date: 'dd/MM/yyyy' : 'UTC' }}</strong>
+              <span class="cell-secondary">{{ appointment.startTime.slice(0, 5) }}</span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="doctor">
+            <th mat-header-cell *matHeaderCellDef>Médico</th>
+            <td mat-cell *matCellDef="let appointment">
+              {{ doctorName(appointment.doctorId) }}
+              <span class="cell-secondary">{{ doctorSpecialty(appointment.doctorId) }}</span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="patient">
+            <th mat-header-cell *matHeaderCellDef>Paciente</th>
+            <td mat-cell *matCellDef="let appointment">{{ appointment.patientName }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>Estado</th>
+            <td mat-cell *matCellDef="let appointment">
+              <mat-chip [ngClass]="statusClass(appointment.status)">
+                {{ statusLabel(appointment.status) }}
+              </mat-chip>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="reason">
+            <th mat-header-cell *matHeaderCellDef>Motivo</th>
+            <td mat-cell *matCellDef="let appointment" class="reason-cell">
+              {{ appointment.reason }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Acciones</th>
+            <td mat-cell *matCellDef="let appointment" class="actions-cell">
+              @if (canEdit(appointment)) {
+                <button
+                  mat-icon-button
+                  matTooltip="Editar"
+                  [routerLink]="['/appointments', appointment.id, 'edit']"
+                  aria-label="Editar cita"
+                >
+                  <mat-icon>edit</mat-icon>
+                </button>
+              }
+
+              @if (isManager && appointment.status === 'REQUESTED') {
+                <button
+                  mat-icon-button
+                  matTooltip="Confirmar"
+                  aria-label="Confirmar cita"
+                  (click)="confirmTransition(appointment, 'confirm', 'Confirmar cita', '¿Deseas confirmar esta cita?', 'Confirmar')"
+                >
+                  <mat-icon>check_circle</mat-icon>
+                </button>
+              }
+
+              @if (isManager && appointment.status === 'CONFIRMED') {
+                <button
+                  mat-icon-button
+                  matTooltip="Iniciar atención"
+                  aria-label="Iniciar atención"
+                  (click)="confirmTransition(appointment, 'start', 'Iniciar atención', '¿Deseas iniciar la atención de esta cita?', 'Iniciar')"
+                >
+                  <mat-icon>play_circle</mat-icon>
+                </button>
+                <button
+                  mat-icon-button
+                  matTooltip="Registrar inasistencia"
+                  aria-label="Registrar inasistencia"
+                  (click)="confirmTransition(appointment, 'did-not-attend', 'Registrar inasistencia', '¿Deseas marcar al paciente como no asistente?', 'Registrar')"
+                >
+                  <mat-icon>person_off</mat-icon>
+                </button>
+              }
+
+              @if (isManager && appointment.status === 'BEING_ATTENDED') {
+                <button
+                  mat-icon-button
+                  matTooltip="Finalizar"
+                  aria-label="Finalizar cita"
+                  (click)="confirmTransition(appointment, 'finish', 'Finalizar cita', '¿Deseas finalizar esta cita?', 'Finalizar')"
+                >
+                  <mat-icon>task_alt</mat-icon>
+                </button>
+              }
+
+              @if (canCancel(appointment)) {
+                <button
+                  mat-icon-button
+                  color="warn"
+                  matTooltip="Cancelar cita"
+                  aria-label="Cancelar cita"
+                  (click)="confirmTransition(appointment, 'cancel', 'Cancelar cita', '¿Estás seguro de cancelar esta cita?', 'Cancelar cita')"
+                >
+                  <mat-icon>cancel</mat-icon>
+                </button>
+              }
+
+              @if (
+                !canEdit(appointment) &&
+                !canCancel(appointment) &&
+                (!isManager ||
+                  (appointment.status !== 'REQUESTED' &&
+                    appointment.status !== 'CONFIRMED' &&
+                    appointment.status !== 'BEING_ATTENDED'))
+              ) {
+                <span class="no-actions">—</span>
+              }
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        </table>
+      </div>
+
+      <mat-paginator
+        [length]="totalItems"
+        [pageSize]="pageSize"
+        [pageIndex]="pageIndex"
+        [pageSizeOptions]="[5, 10, 25]"
+        (page)="onPageChange($event)"
+        aria-label="Paginación de citas"
+      />
+    }
+  </mat-card-content>
+</mat-card>

@@ -62,6 +62,13 @@ export const routes: Routes = [
             (m) => m.BUSINESS_HOURS_ROUTES
           )
       },
+      {
+        path: 'appointments',
+        loadChildren: () =>
+          import('./features/appointments/appointments.routes').then(
+            (m) => m.APPOINTMENTS_ROUTES
+          )
+      },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
     ]
   },

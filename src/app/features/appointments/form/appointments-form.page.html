@@ -1,0 +1,150 @@
+<app-page-header [title]="title" [description]="description">
+  <a mat-button routerLink="/appointments">
+    <mat-icon>arrow_back</mat-icon>
+    Cancelar
+  </a>
+</app-page-header>
+
+@if (loadingData()) {
+  <mat-progress-bar mode="indeterminate" />
+} @else {
+  <mat-card>
+    <mat-card-content>
+      <form [formGroup]="form" (ngSubmit)="submit()" novalidate class="appointment-form">
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Médico</mat-label>
+            <mat-select formControlName="doctorId" aria-label="Médico">
+              @for (doctor of doctors(); track doctor.id) {
+                <mat-option [value]="doctor.id">
+                  {{ doctor.firstName }} {{ doctor.lastName }} — {{ doctor.specialty.name }}
+                </mat-option>
+              }
+            </mat-select>
+            @if (form.controls.doctorId.hasError('required') && form.controls.doctorId.touched) {
+              <mat-error>Selecciona un médico</mat-error>
+            }
+          </mat-form-field>
+
+          @if (isPatient && currentPatient()) {
+            <div class="patient-summary">
+              <mat-icon>person</mat-icon>
+              <div>
+                <span>Paciente</span>
+                <strong>
+                  {{ currentPatient()!.firstName }} {{ currentPatient()!.lastName }}
+                </strong>
+              </div>
+            </div>
+          } @else {
+            <mat-form-field appearance="outline">
+              <mat-label>Paciente</mat-label>
+              <mat-select formControlName="patientId" aria-label="Paciente">
+                @for (patient of patients(); track patient.id) {
+                  <mat-option [value]="patient.id">
+                    {{ patient.firstName }} {{ patient.lastName }} — {{ patient.documentNumber }}
+                  </mat-option>
+                }
+              </mat-select>
+              @if (form.controls.patientId.hasError('required') && form.controls.patientId.touched) {
+                <mat-error>Selecciona un paciente</mat-error>
+              }
+            </mat-form-field>
+          }
+        </div>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Fecha</mat-label>
+            <input
+              matInput
+              [matDatepicker]="appointmentDatePicker"
+              [min]="minDate"
+              formControlName="date"
+              aria-label="Fecha de la cita"
+            />
+            <mat-datepicker-toggle matIconSuffix [for]="appointmentDatePicker" />
+            <mat-datepicker #appointmentDatePicker />
+            @if (form.controls.date.hasError('required') && form.controls.date.touched) {
+              <mat-error>La fecha es requerida</mat-error>
+            }
+            @if (form.controls.date.hasError('matDatepickerMin') && form.controls.date.touched) {
+              <mat-error>La fecha no puede estar en el pasado</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Hora de inicio</mat-label>
+            <mat-select
+              formControlName="startTime"
+              [disabled]="loadingSchedule() || availableSlots().length === 0"
+              aria-label="Hora de inicio"
+            >
+              @for (slot of availableSlots(); track slot) {
+                <mat-option [value]="slot">{{ slot }}</mat-option>
+              }
+            </mat-select>
+            @if (form.controls.startTime.hasError('required') && form.controls.startTime.touched) {
+              <mat-error>Selecciona una hora</mat-error>
+            }
+          </mat-form-field>
+        </div>
+
+        @if (form.controls.date.value && form.controls.doctorId.value && !loadingSchedule()) {
+          @if (selectedSchedule()) {
+            <div class="schedule-info" role="status">
+              <mat-icon>schedule</mat-icon>
+              <span>
+                Horario: {{ selectedSchedule()!.startTime.slice(0, 5) }}–{{ selectedSchedule()!.endTime.slice(0, 5) }}.
+                Duración de la cita: {{ selectedSchedule()!.appointmentDurationMin }} minutos.
+              </span>
+            </div>
+          } @else {
+            <div class="schedule-info schedule-info--warning" role="alert">
+              <mat-icon>event_busy</mat-icon>
+              <span>El médico no atiende en la fecha seleccionada.</span>
+            </div>
+          }
+        }
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Motivo de la cita</mat-label>
+          <textarea matInput formControlName="reason" rows="3" aria-label="Motivo de la cita"></textarea>
+          @if (form.controls.reason.hasError('required') && form.controls.reason.touched) {
+            <mat-error>El motivo es requerido</mat-error>
+          }
+          @if (form.controls.reason.hasError('pattern') && form.controls.reason.touched) {
+            <mat-error>Ingresa un motivo válido</mat-error>
+          }
+          @if (form.controls.reason.hasError('maxlength') && form.controls.reason.touched) {
+            <mat-error>Máximo 250 caracteres</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Nota adicional</mat-label>
+          <textarea matInput formControlName="note" rows="3" aria-label="Nota adicional"></textarea>
+          <mat-hint align="end">Opcional</mat-hint>
+          @if (form.controls.note.hasError('maxlength') && form.controls.note.touched) {
+            <mat-error>Máximo 500 caracteres</mat-error>
+          }
+        </mat-form-field>
+
+        <div class="form-actions">
+          <button
+            mat-raised-button
+            color="primary"
+            type="submit"
+            [disabled]="form.invalid || loading() || loadingSchedule()"
+          >
+            @if (loading()) {
+              <mat-spinner diameter="18" />
+            } @else {
+              {{ isEditMode ? 'Actualizar cita' : 'Crear cita' }}
+            }
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+}
