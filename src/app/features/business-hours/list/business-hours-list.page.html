@@ -1,0 +1,126 @@
+<app-page-header
+  title="Horarios de atención"
+  description="Configura la disponibilidad semanal de los médicos"
+>
+  @if (isAdmin && selectedDoctorId.value) {
+    <a
+      mat-raised-button
+      color="primary"
+      routerLink="/business-hours/new"
+      [queryParams]="{ doctorId: selectedDoctorId.value }"
+    >
+      <mat-icon>add</mat-icon>
+      Nuevo horario
+    </a>
+  }
+</app-page-header>
+
+<mat-card class="doctor-card">
+  <mat-card-content>
+    @if (isAdmin) {
+      <mat-form-field appearance="outline">
+        <mat-label>Médico</mat-label>
+        <mat-select
+          [formControl]="selectedDoctorId"
+          [disabled]="loadingDoctors()"
+          aria-label="Seleccionar médico"
+        >
+          @for (doctor of doctors(); track doctor.id) {
+            <mat-option [value]="doctor.id">
+              {{ doctor.firstName }} {{ doctor.lastName }} — {{ doctor.specialty.name }}
+            </mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    } @else if (currentDoctor()) {
+      <div class="doctor-summary">
+        <mat-icon>medical_services</mat-icon>
+        <div>
+          <strong>{{ currentDoctor()!.firstName }} {{ currentDoctor()!.lastName }}</strong>
+          <span>{{ currentDoctor()!.specialty.name }}</span>
+        </div>
+      </div>
+    }
+  </mat-card-content>
+</mat-card>
+
+<mat-card>
+  <mat-card-content>
+    @if (loading() || loadingDoctors()) {
+      <div class="table-skeleton" aria-label="Cargando horarios">
+        @for (item of [1, 2, 3, 4, 5]; track item) {
+          <div class="skeleton-row"></div>
+        }
+      </div>
+    } @else if (!selectedDoctorId.value) {
+      <app-empty-state
+        icon="person_search"
+        title="Selecciona un médico"
+        message="Selecciona un médico para consultar su disponibilidad."
+      ></app-empty-state>
+    } @else if (dataSource.data.length === 0) {
+      <app-empty-state
+        icon="schedule"
+        title="Sin horarios configurados"
+        message="El médico todavía no tiene horarios de atención activos."
+      ></app-empty-state>
+    } @else {
+      <div class="table-container">
+        <table mat-table [dataSource]="dataSource" aria-label="Horarios de atención">
+          <ng-container matColumnDef="dayOfWeek">
+            <th mat-header-cell *matHeaderCellDef>Día</th>
+            <td mat-cell *matCellDef="let schedule">{{ dayLabel(schedule.dayOfWeek) }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="timeRange">
+            <th mat-header-cell *matHeaderCellDef>Horario</th>
+            <td mat-cell *matCellDef="let schedule">
+              {{ formatTime(schedule.startTime) }} – {{ formatTime(schedule.endTime) }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="appointmentDuration">
+            <th mat-header-cell *matHeaderCellDef>Duración de cita</th>
+            <td mat-cell *matCellDef="let schedule">
+              {{ schedule.appointmentDurationMin }} min
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="specialty">
+            <th mat-header-cell *matHeaderCellDef>Especialidad</th>
+            <td mat-cell *matCellDef="let schedule">{{ schedule.specialtyName }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Acciones</th>
+            <td mat-cell *matCellDef="let schedule">
+              <button
+                mat-icon-button
+                matTooltip="Editar"
+                [routerLink]="['/business-hours', schedule.id, 'edit']"
+                [queryParams]="{ doctorId: selectedDoctorId.value }"
+                [attr.aria-label]="'Editar horario del ' + dayLabel(schedule.dayOfWeek)"
+              >
+                <mat-icon>edit</mat-icon>
+              </button>
+
+              <button
+                *appHasRole="'Admin'"
+                mat-icon-button
+                color="warn"
+                matTooltip="Desactivar"
+                [attr.aria-label]="'Desactivar horario del ' + dayLabel(schedule.dayOfWeek)"
+                (click)="confirmDeactivate(schedule)"
+              >
+                <mat-icon>event_busy</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        </table>
+      </div>
+    }
+  </mat-card-content>
+</mat-card>
