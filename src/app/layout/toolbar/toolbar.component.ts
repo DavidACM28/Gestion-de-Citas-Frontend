@@ -30,6 +30,19 @@ export class ToolbarComponent {
     this.menuToggle.emit();
   }
 
+  protected openProfile(): void {
+    const role = this.auth.currentUser()?.role;
+
+    if (role === 'Patient') {
+      this.router.navigate(['/patients/me']);
+      return;
+    }
+
+    if (role === 'Admin' || role === 'Receptionist') {
+      this.router.navigate(['/users/me']);
+    }
+  }
+
   protected logout(): void {
     this.auth.logout();
     this.router.navigate(['/login']);

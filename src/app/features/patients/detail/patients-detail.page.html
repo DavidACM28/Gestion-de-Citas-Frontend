@@ -1,0 +1,70 @@
+<app-page-header
+  [title]="isOwnProfile ? 'Mi perfil' : patient() ? patient()!.firstName + ' ' + patient()!.lastName : 'Datos del paciente'"
+  [description]="isOwnProfile ? 'Información de tu perfil de paciente' : 'Información completa del paciente'"
+>
+  @if (!isOwnProfile) {
+    <a mat-button routerLink="/patients">
+      <mat-icon>arrow_back</mat-icon>
+      Volver
+    </a>
+  }
+</app-page-header>
+
+@if (loading()) {
+  <mat-progress-bar mode="indeterminate" />
+} @else if (patient()) {
+  <mat-card>
+    <mat-card-content>
+      <div class="detail-grid">
+        <div class="detail-field">
+          <span class="detail-field__label">Nombres</span>
+          <span class="detail-field__value">{{ patient()!.firstName }}</span>
+        </div>
+
+        <div class="detail-field">
+          <span class="detail-field__label">Apellidos</span>
+          <span class="detail-field__value">{{ patient()!.lastName }}</span>
+        </div>
+
+        <div class="detail-field">
+          <span class="detail-field__label">Documento</span>
+          <span class="detail-field__value">
+            {{ patient()!.documentType }} {{ patient()!.documentNumber }}
+          </span>
+        </div>
+
+        <div class="detail-field">
+          <span class="detail-field__label">Fecha de nacimiento</span>
+          <span class="detail-field__value">
+            {{ patient()!.dateOfBirth | date: 'dd/MM/yyyy' : 'UTC' }}
+          </span>
+        </div>
+
+        <div class="detail-field">
+          <span class="detail-field__label">Teléfono</span>
+          <span class="detail-field__value">{{ patient()!.phoneNumber }}</span>
+        </div>
+
+        <div class="detail-field">
+          <span class="detail-field__label">Correo electrónico</span>
+          <span class="detail-field__value">{{ patient()!.user.email }}</span>
+        </div>
+
+        <div class="detail-field">
+          <span class="detail-field__label">Nombre de usuario</span>
+          <span class="detail-field__value">{{ patient()!.user.username }}</span>
+        </div>
+
+        <div class="detail-field">
+          <span class="detail-field__label">Rol</span>
+          <span class="detail-field__value">{{ patient()!.user.role }}</span>
+        </div>
+
+        <div class="detail-field full-width">
+          <span class="detail-field__label">Dirección</span>
+          <span class="detail-field__value">{{ patient()!.address }}</span>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+}

@@ -119,6 +119,20 @@ mat-form-field mat-icon[matPrefix] {
   margin-right: var(--space-2);
 }
 
+.login-register {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  margin-top: var(--space-4);
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+}
+
+.login-register a {
+  color: var(--color-primary);
+}
+
 .alert {
   display: flex;
   align-items: center;
@@ -169,5 +183,9 @@ mat-card-footer mat-icon {
   .login-card {
     margin-top: 8vh;
     padding: var(--space-2);
+  }
+
+  .login-register {
+    flex-direction: column;
   }
 }

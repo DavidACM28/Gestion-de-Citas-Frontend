@@ -1,0 +1,38 @@
+<app-page-header
+  [title]="isOwnProfile ? 'Mi perfil' : user()?.username ?? 'Detalle de usuario'"
+  [description]="isOwnProfile ? 'Información de tu cuenta' : 'Información completa del usuario'"
+>
+  @if (!isOwnProfile) {
+    <a mat-button routerLink="/users">
+      <mat-icon>arrow_back</mat-icon>
+      Volver
+    </a>
+  }
+</app-page-header>
+
+@if (loading()) {
+  <mat-progress-bar mode="indeterminate" />
+} @else if (user()) {
+  <mat-card>
+    <mat-card-content>
+      <div class="detail-grid">
+        <div class="detail-field">
+          <span class="detail-field__label">Nombre de usuario</span>
+          <span class="detail-field__value">{{ user()!.username }}</span>
+        </div>
+
+        <div class="detail-field">
+          <span class="detail-field__label">Rol</span>
+          <span class="detail-field__value">
+            <mat-chip>{{ user()!.role }}</mat-chip>
+          </span>
+        </div>
+
+        <div class="detail-field full-width">
+          <span class="detail-field__label">Correo electrónico</span>
+          <span class="detail-field__value">{{ user()!.email }}</span>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+}

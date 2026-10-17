@@ -1,0 +1,125 @@
+.registration-page {
+  min-height: 100dvh;
+  display: flex;
+  justify-content: center;
+  padding: var(--space-8) var(--space-6);
+  box-sizing: border-box;
+  background:
+    radial-gradient(circle at 15% 15%, rgba(255, 255, 255, 0.2), transparent 28%),
+    radial-gradient(circle at 85% 85%, rgba(15, 157, 138, 0.28), transparent 30%),
+    var(--gradient-topbar);
+}
+
+.registration-panel {
+  width: min(100%, 920px);
+}
+
+.registration-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-5);
+  color: #ffffff;
+}
+
+.registration-header__icon {
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 52px;
+  border-radius: var(--radius-md);
+  color: var(--color-primary-dark);
+  background: #ffffff;
+}
+
+.registration-header__icon mat-icon {
+  width: 30px;
+  height: 30px;
+  font-size: 30px;
+}
+
+.registration-header p {
+  margin: 0 0 2px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.registration-header h1 {
+  margin: 0;
+  font-size: 1.75rem;
+}
+
+.registration-header span:not(.registration-header__icon) {
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 0.9rem;
+}
+
+.registration-panel mat-card {
+  padding: var(--space-4);
+}
+
+.patient-form {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.patient-form h2 {
+  margin: 12px 0 8px;
+  color: var(--color-text-primary);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.patient-form h2:first-child {
+  margin-top: 0;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+
+  mat-form-field {
+    width: 100%;
+  }
+
+  @media (max-width: 599px) {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+}
+
+.full-width {
+  width: 100%;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+.registration-login {
+  margin: var(--space-4) 0 0;
+  color: rgba(255, 255, 255, 0.84);
+  text-align: center;
+}
+
+.registration-login a {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+@media (max-width: 599px) {
+  .registration-page {
+    padding: var(--space-5) var(--space-4);
+  }
+
+  .registration-panel mat-card {
+    padding: 0;
+  }
+}

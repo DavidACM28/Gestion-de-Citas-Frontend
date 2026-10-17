@@ -36,6 +36,13 @@
 
     <mat-divider></mat-divider>
 
+    @if (auth.currentUser()?.role !== 'Doctor') {
+      <button mat-menu-item type="button" (click)="openProfile()">
+        <mat-icon>person</mat-icon>
+        <span>Mi perfil</span>
+      </button>
+    }
+
     <button mat-menu-item type="button" (click)="logout()">
       <mat-icon>logout</mat-icon>
       <span>Cerrar sesión</span>

@@ -10,6 +10,13 @@ export const routes: Routes = [
       import('./features/auth/login/login.page').then((m) => m.LoginPage)
   },
   {
+    path: 'register',
+    loadComponent: () =>
+      import('./features/patients/form/patients-form.page').then(
+        (m) => m.PatientsFormPage
+      )
+  },
+  {
     path: '403',
     loadComponent: () =>
       import('./features/errors/forbidden/forbidden.page').then((m) => m.ForbiddenPage)
@@ -37,6 +44,16 @@ export const routes: Routes = [
           import('./features/specialties/specialties.routes').then(
             (m) => m.SPECIALTIES_ROUTES
           )
+      },
+      {
+        path: 'patients',
+        loadChildren: () =>
+          import('./features/patients/patients.routes').then((m) => m.PATIENTS_ROUTES)
+      },
+      {
+        path: 'users',
+        loadChildren: () =>
+          import('./features/users/users.routes').then((m) => m.USERS_ROUTES)
       },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
     ]

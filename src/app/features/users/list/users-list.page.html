@@ -1,0 +1,65 @@
+<app-page-header
+  title="Usuarios"
+  description="Listado de usuarios administrativos y de recepción"
+>
+  <button *appHasRole="'Admin'" mat-raised-button color="primary" routerLink="/users/new">
+    <mat-icon>person_add</mat-icon>
+    Nuevo usuario
+  </button>
+</app-page-header>
+
+<mat-card>
+  <mat-card-content>
+    @if (loading()) {
+      <div class="table-skeleton" aria-label="Cargando usuarios">
+        @for (item of [1, 2, 3, 4, 5]; track item) {
+          <div class="skeleton-row"></div>
+        }
+      </div>
+    } @else if (dataSource.data.length === 0) {
+      <app-empty-state
+        icon="manage_accounts"
+        title="No se encontraron usuarios"
+        message="No hay usuarios registrados en este momento."
+      ></app-empty-state>
+    } @else {
+      <div class="table-container">
+        <table mat-table [dataSource]="dataSource" aria-label="Listado de usuarios">
+          <ng-container matColumnDef="username">
+            <th mat-header-cell *matHeaderCellDef>Usuario</th>
+            <td mat-cell *matCellDef="let user">{{ user.username }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="email">
+            <th mat-header-cell *matHeaderCellDef>Correo</th>
+            <td mat-cell *matCellDef="let user" class="email-cell">{{ user.email }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="role">
+            <th mat-header-cell *matHeaderCellDef>Rol</th>
+            <td mat-cell *matCellDef="let user">
+              <mat-chip>{{ user.role }}</mat-chip>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Acciones</th>
+            <td mat-cell *matCellDef="let user">
+              <button
+                mat-icon-button
+                matTooltip="Ver detalle"
+                [routerLink]="['/users', user.id]"
+                [attr.aria-label]="'Ver detalle de ' + user.username"
+              >
+                <mat-icon>visibility</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        </table>
+      </div>
+    }
+  </mat-card-content>
+</mat-card>

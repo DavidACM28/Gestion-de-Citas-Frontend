@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { NotificationService } from '../../../core/services/notification.service';
 import { SharedMaterialModule } from '../../../shared/shared-material.module';
@@ -10,7 +10,7 @@ import { SharedMaterialModule } from '../../../shared/shared-material.module';
 @Component({
   selector: 'app-login-page',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, SharedMaterialModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, SharedMaterialModule],
   templateUrl: './login.page.html',
   styleUrl: './login.page.scss',
 })
